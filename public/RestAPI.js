@@ -33,3 +33,21 @@ function completeTask(family_username, task_name, username) {
 function claimReward(family_username, reward_name, username) {
 	$.post('/finish_reward', {family_username: family_username, name: name, username: username});
 }
+
+function getUser(username, callback) { //callback format should be function callback(data) {};
+	$.get('/user/' + username, callback); 
+	//the callback function will get a json object representing the user and their family. Process
+	//this however you want to (i.e. to populate the UI)
+}
+
+function getFamily(family_username, callback) {
+	$.get('/family/' + family_username, callback);
+}
+
+function getTasks(family_username, callback) {
+	$.get('/tasks/' + family_username, callback);
+}
+
+function getRewards(family_username, callback) {
+	$.get('/rewards/' + family_username, callback);
+}
