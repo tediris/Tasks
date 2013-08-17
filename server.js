@@ -42,6 +42,8 @@ app.post('/new_user', function (req, res) {
   	res.json(true);
 
   	userMap[req.body.username] = currentFamily;
+
+  	res.json(true);
 });
 
 app.post('/child/new', function (req, res) {
@@ -64,6 +66,8 @@ app.post('/child/new', function (req, res) {
     console.log(child);
     console.log(currentFamily);
   	*/
+
+  	res.json(true);
 });
 
 app.post('/parent/new', function (req, res) {
@@ -78,6 +82,8 @@ app.post('/parent/new', function (req, res) {
     var currentFamily = getFamilyByUsername(req.body.family_username);
     currentFamily.addMember(parent);
     userMap[req.body.username] = currentFamily;
+
+    res.json(true);
 });
 
 app.post('/new_family', function(req, res) {
@@ -104,6 +110,8 @@ app.post('/child/request_task', function (req, res) {
   	var task = new Task(req.body.name, req.body.description, req.body.reward);
   	var family = getFamilyByUsername(req.body.family_username);
   	family.requestedTasks.push(task); //can get the child and do a .request Task too
+
+  	res.json(true);
 });
 
 app.post('/child/request_reward', function (req, res) {
@@ -118,6 +126,8 @@ app.post('/child/request_reward', function (req, res) {
   	var reward = new Reward(req.body.name, req.body.description, req.body.cost);
   	var family = getFamilyByUsername(req.body.family_username);
   	family.requestedRewards.push(task); //can get the child and do a .request Reward too
+
+  	res.json(true);
 });
 
 app.post('/new_task', function (req, res) {
@@ -132,6 +142,8 @@ app.post('/new_task', function (req, res) {
   	var task = new Task(req.body.name, req.body.description, req.body.reward);
   	var family = getFamilyByUsername(req.body.family_username);
   	family.tasks.push(task);
+
+  	res.json(true);
 });
 
 app.post('/new_reward', function (req, res) {
@@ -146,6 +158,8 @@ app.post('/new_reward', function (req, res) {
   	var reward = new Reward(req.body.name, req.body.description, req.body.cost);
   	var family = getFamilyByUsername(req.body.family_username);
   	family.tasks.push(reward);
+
+  	res.json(true);
 });
 
 app.post('/finish_task', function (req, res) {
