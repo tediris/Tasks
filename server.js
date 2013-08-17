@@ -37,9 +37,11 @@ app.post('/new_user', function (req, res) {
   	}
 
   	var mem = new Member(req.body.name, req.body.username, req.body.family_username);
-  	var currentFamily = lookupUserFamily(mem.username);
-  	currentFamily.members.push(mem);
+    var currentFamily = getFamilyByUsername(req.body.family_username);
+  	currentFamily.addMember(mem);
   	res.json(true);
+
+  	userMap[req.body.username] = currentFamily;
 });
 
 app.post('/child/new', function (req, res) {
@@ -51,8 +53,17 @@ app.post('/child/new', function (req, res) {
   	}
 
   	var child = new Child(req.body.name, req.body.username, req.body.family_username);
-    var currentFamily = lookupUserFamily(child.username);
-  	currentFamily.members.push(child);	
+    var currentFamily = getFamilyByUsername(req.body.family_username);
+
+    currentFamily.addMember(child);
+
+    userMap[req.body.username] = currentFamily;
+    /*
+    currentFamily.members.push(child);
+    userMap[req.body.username] = currentFamily;
+    console.log(child);
+    console.log(currentFamily);
+  	*/
 });
 
 app.post('/parent/new', function (req, res) {
@@ -64,8 +75,9 @@ app.post('/parent/new', function (req, res) {
   	}
 
   	var parent = new Parent(req.body.name, req.body.username, req.body.family_username);
-    var currentFamily = lookupUserFamily(parent.username);
-  	currentFamily.members.push(parent);	
+    var currentFamily = getFamilyByUsername(req.body.family_username);
+    currentFamily.addMember(parent);
+    userMap[req.body.username] = currentFamily;
 });
 
 app.post('/new_family', function(req, res) {
@@ -262,6 +274,10 @@ function Family(username, lastname) {
 		}
 		return null;
 	}
+
+	this.addMember = function(member) {
+		if (this.members.indeOf(member) == -1) this.members.push(member);
+	}
 }
 
 function Member(name, username, family_username) {
@@ -276,26 +292,25 @@ function Parent(name, username, family_username) {
 	this.name = name;
 	this.username = username;
 	this.family_username = family_username;
-	this.family = getFamilyByUsername(family_username);
 	userMap[username] = family_username;
 	this.createTask = function(task) {
-		this.family.tasks.push(task);
+		getFamilyFromUser(this).tasks.push(task);
 		this.currentTime = getCurrentTime();
 	}
 
 	this.createRewards = function(reward) {
-		this.family.rewards.push(reward);
+		getFamilyFromUser(this).rewards.push(reward);
 	}
 
 	this.approveTask = function(task) {
-		for (var i = 0; i < this.family.requestedTasks.length; i++) {
-			if (this.family.requestedTasks[i].name == this.task.name) {
+		for (var i = 0; i < getFamilyFromUser(this).requestedTasks.length; i++) {
+			if (getFamilyFromUser(this).requestedTasks[i].name == this.task.name) {
 				// add to family tasks
-				this.family.tasks.push(task);
+				getFamilyFromUser(this).tasks.push(task);
 				task.currentTime = getCurrentTime();
 				this.currentTime = getCurrentTime();
 				// delete from family requested Tasks
-				this.family.requestedTasks.splice(i, 1);
+				getFamilyFromUser(this).requestedTasks.splice(i, 1);
 				return;
 			}
 		}
@@ -303,11 +318,11 @@ function Parent(name, username, family_username) {
 
 	this.approveReward = function(reward) {
 		// add to family rewards
-		this.family.rewards.push(reward);
-		for (var i = 0; i < this.family.requestedRewards.length; i++) {
-			if (this.family.requestedRewards[i] == this.reward) {
+		getFamilyFromUser(this).rewards.push(reward);
+		for (var i = 0; i < getFamilyFromUser(this).requestedRewards.length; i++) {
+			if (getFamilyFromUser(this).requestedRewards[i] == this.reward) {
 				// delete from family requested rewards
-				this.family.requestedRewards.splice(i, 1);
+				getFamilyFromUser(this).requestedRewards.splice(i, 1);
 				return;
 			}
 		}
@@ -319,14 +334,13 @@ function Child(name, username, family_username) {
 	this.name = name;
 	this.username = username;
 	this.family_username = family_username;
-	this.family = getFamilyByUsername(family_username);
 	userMap[username] = family_username;
 	this.requestTask = function(task) {
-		this.family.requestedTasks.push(task);
+		getFamilyFromUser(this).requestedTasks.push(task);
 	}
 
 	this.requestReward = function(reward) {
-		this.family.requestedRewards.push(reward);
+		getFamilyFromUser(this).requestedRewards.push(reward);
 	}
 
 	this.completeTask = function(task) {
@@ -336,17 +350,19 @@ function Child(name, username, family_username) {
 		// apparently this formula calculates difference between time according to a answers.yahoo post lol
 		task.timeToCompleteTask = (task.completionTime.getTime() - task.inceptionTime.getTime()) / 1000;
 
-		this.family.completedTasks.push(task);
-		for (var i = 0; i < this.family.tasks.length; i++) {
-			if (this.family.tasks[i] == this.task) {
-				this.family.tasks.splice(i, 1);
+		var currentFam = getFamilyFromUser(this);
+
+		currentFam.completedTasks.push(task);
+		for (var i = 0; i < currentFam.tasks.length; i++) {
+			if (currentFam.tasks[i].name == task.name) {
+				currentFam.tasks.splice(i, 1);
 			}
 		}
 	}
 
 	this.claimReward = function(reward) {
 		reward.earned = true;
-		this.currency = this.currency - reward.cost;
+		getFamilyFromUser(this).currency = getFamilyFromUser(this).currency - reward.cost;
 	}
 }
 
@@ -390,6 +406,11 @@ function getRewardFromFamily(family, rewardname) {
 		if (family.rewards[i] == rewardname) return family.rewards[i];
 	}
 	return null;
+}
+
+function getFamilyFromUser(user) {
+	var family_username = userMap[user.name];
+	return getFamilyByUsername(family_username);
 }
 
 function getCurrentTime() {
