@@ -272,8 +272,12 @@ function Member(name, username, family_username) {
 	userMap[username] = family_username;
 }
 
-function Parent() {
-	Parent.inherits(Member);
+function Parent(name, username, family_username) {
+	this.name = name;
+	this.username = username;
+	this.family_username = family_username;
+	this.family = getFamilyByUsername(family_username);
+	userMap[username] = family_username;
 	this.createTask = function(task) {
 		this.family.tasks.push(task);
 		this.currentTime = getCurrentTime();
@@ -311,8 +315,12 @@ function Parent() {
 
 }
 
-function Child() {
-	Child.inherits(Member);
+function Child(name, username, family_username) {
+	this.name = name;
+	this.username = username;
+	this.family_username = family_username;
+	this.family = getFamilyByUsername(family_username);
+	userMap[username] = family_username;
 	this.requestTask = function(task) {
 		this.family.requestedTasks.push(task);
 	}
