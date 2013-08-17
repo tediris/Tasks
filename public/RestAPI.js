@@ -14,8 +14,8 @@ function requestTask(family_username, name, description, reward) {
 	$.post('/child/request_task', {family_username: family_username, name: name, description: description, reward: reward});
 }
 
-function requestReward(family_username, name, description, reward) {
-	$.post('/child/request_task', {family_username: family_username, name: name, description: description, reward: reward});
+function requestReward(family_username, name, description, cost) {
+	$.post('/child/request_task', {family_username: family_username, name: name, description: description, cost: cost});
 }
 
 function newTask(family_username, name, description, reward) {
@@ -24,4 +24,12 @@ function newTask(family_username, name, description, reward) {
 
 function newReward(family_username, name, description, cost) {
 	$.post('/new_task', {family_username: family_username, name: name, description: description, cost: cost});
+}
+
+function completeTask(family_username, task_name, username) {
+	$.post('/finish_task', {family_username: family_username, name: name, username: username});
+}
+
+function claimReward(family_username, reward_name, username) {
+	$.post('/finish_reward', {family_username: family_username, name: name, username: username});
 }

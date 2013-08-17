@@ -98,14 +98,14 @@ app.post('/child/request_reward', function (req, res) {
 	if(!req.body.hasOwnProperty('family_username') || 
      !req.body.hasOwnProperty('name') || 
      !req.body.hasOwnProperty('description') || 
-     !req.body.hasOwnProperty('reward')) {
+     !req.body.hasOwnProperty('cost')) {
     	res.statusCode = 400;
     	return res.send('Error 400: Post syntax incorrect.');
   	}
 
-  	var task = new Task(req.body.name, req.body.description, req.body.reward);
+  	var reward = new Reward(req.body.name, req.body.description, req.body.cost);
   	var family = getFamilyByUsername(req.body.family_username);
-  	family.requestedTasks.push(task); //can get the child and do a .request Task too
+  	family.requestedRewards.push(task); //can get the child and do a .request Reward too
 });
 
 app.post('/new_task', function (req, res) {
