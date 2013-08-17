@@ -23,7 +23,7 @@ function newTask(family_username, name, description, reward) {
 }
 
 function newReward(family_username, name, description, cost) {
-	$.post('/new_task', {family_username: family_username, name: name, description: description, cost: cost});
+	$.post('/new_reward', {family_username: family_username, name: name, description: description, cost: cost});
 }
 
 function completeTask(family_username, task_name, username) {

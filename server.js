@@ -15,7 +15,8 @@ var app = express();
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
+app.engine('html', require('ejs').renderFile);
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
@@ -157,7 +158,7 @@ app.post('/new_reward', function (req, res) {
 
   	var reward = new Reward(req.body.name, req.body.description, req.body.cost);
   	var family = getFamilyByUsername(req.body.family_username);
-  	family.tasks.push(reward);
+  	family.rewards.push(reward);
 
   	res.json(true);
 });
@@ -194,7 +195,10 @@ app.post('/finish_reward', function (req, res) {
   	}
 
   	var family = getFamilyByUsername(req.body.family_username);
-  	var reward = getTaskFromFamily(family, req.body.name);
+
+  	console.log("REWARD NAME: " + req.body.name);
+
+  	var reward = getRewardFromFamily(family, req.body.name);
   	var child = family.getUser(req.body.username);
 
   	child.claimReward(reward);
@@ -378,7 +382,9 @@ function Child(name, username, family_username) {
 
 	this.claimReward = function(reward) {
 		reward.earned = true;
-		getFamilyFromUser(this).currency = getFamilyFromUser(this).currency - reward.cost;
+		var currentCurr = parseInt(getFamilyFromUser(this).currency);
+		var cost = parseInt(reward.value);
+		getFamilyFromUser(this).currency = currentCurr - cost;
 	}
 }
 
