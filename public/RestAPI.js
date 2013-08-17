@@ -7,7 +7,7 @@ function addChild(name, username, family_username) {
 }
 
 function addParent(name, username, family_username) {
-	$.post('/child/new', {name: name, username: username, family_username: family_username});
+	$.post('/parent/new', {name: name, username: username, family_username: family_username});
 }
 
 function requestTask(family_username, name, description, reward) {
@@ -19,11 +19,11 @@ function requestReward(family_username, name, description, cost) {
 }
 
 function approveTask(family_username, task_name, username) {
-	$.post('/child/approve_task', {family_username: family_username, name: task_name, username: username});
+	$.post('/parent/approve_task', {family_username: family_username, name: task_name, username: username});
 }
 
 function approveTask(family_username, reward_name, username) {
-	$.post('/child/approve_reward', {family_username: family_username, name: reward_name, username: username});
+	$.post('/parent/approve_reward', {family_username: family_username, name: reward_name, username: username});
 }
 
 function newTask(family_username, name, description, reward) {
