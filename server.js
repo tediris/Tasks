@@ -131,6 +131,44 @@ app.post('/child/request_reward', function (req, res) {
   	res.json(true);
 });
 
+app.post('/parent/approve_task', function (req, res) {
+	if(!req.body.hasOwnProperty('family_username') || 
+     !req.body.hasOwnProperty('name') || 
+     !req.body.hasOwnProperty('username')) {
+    	res.statusCode = 400;
+    	return res.send('Error 400: Post syntax incorrect.');
+  	}
+
+  	var taskName = req.body.name;
+  	var family_username = req.body.family_username;
+  	var username = req.body.username;
+
+  	var family = getFamilyByUsername(family_username);
+  	var parent = family.getUser(username);
+
+  	parent.approveTask(taskName);
+
+});
+
+app.post('/parent/approve_reward', function (req, res) {
+	if(!req.body.hasOwnProperty('family_username') || 
+     !req.body.hasOwnProperty('name') || 
+     !req.body.hasOwnProperty('username')) {
+    	res.statusCode = 400;
+    	return res.send('Error 400: Post syntax incorrect.');
+  	}
+
+  	var rewardName = req.body.name;
+  	var family_username = req.body.family_username;
+  	var username = req.body.username;
+
+  	var family = getFamilyByUsername(family_username);
+  	var parent = family.getUser(username);
+
+  	parent.approveReward(rewardName);
+
+});
+
 app.post('/new_task', function (req, res) {
 	if(!req.body.hasOwnProperty('family_username') || 
      !req.body.hasOwnProperty('name') || 

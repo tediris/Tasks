@@ -15,7 +15,15 @@ function requestTask(family_username, name, description, reward) {
 }
 
 function requestReward(family_username, name, description, cost) {
-	$.post('/child/request_task', {family_username: family_username, name: name, description: description, cost: cost});
+	$.post('/child/request_reward', {family_username: family_username, name: name, description: description, cost: cost});
+}
+
+function approveTask(family_username, task_name, username) {
+	$.post('/child/approve_task', {family_username: family_username, name: task_name, username: username});
+}
+
+function approveTask(family_username, reward_name, username) {
+	$.post('/child/approve_reward', {family_username: family_username, name: reward_name, username: username});
 }
 
 function newTask(family_username, name, description, reward) {
