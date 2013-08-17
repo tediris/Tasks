@@ -41,8 +41,68 @@ function Family(username, lastname) {
 	this.lastname = lastname;
 	this.members = [];
 	this.tasks = [];
+	this.requestedTasks = [];
+	// this.completedTasks = []; should we keep track 
 	this.rewards = [];
+	this.requestedRewards = [];
 	this.currency = 0;
+
+}
+
+function Member(name, username, family_username) {
+	this.name = name;
+	this.username = username;
+	this.family_username = family_username;
+	this.family = getFamilyByUsername(family_username);
+}
+
+function Parent() {
+	Parent.inherits(Member);
+	this.createTask = function(task) {
+		this.family_username.tasks.push(task);
+	}
+
+	this.createRewards = function(reward) {
+		this.family_username.rewards.push(reward);
+	}
+
+	this.approveTask = function(task) {
+		for (var i = 0; i < this.family_username.requestedTasks.length; i++) {
+			if (this.family_username.requestedTasks[i] == this.task) {
+				// add to family tasks
+				this.family_username.tasks.push(task);
+
+				// delete from family requested Tasks
+				this.family_username.requestedTasks.splice(i, 1);
+				return;
+			}
+		}
+	}
+
+	this.approveReward = function(reward) {
+		for (var i = 0; i < this.family_username.requestedRewards.length; i++) {
+			if (this.family_username.requestedRewards[i] == this.reward) {
+				// add to family rewards
+				this.family_username.rewards.push(reward);
+
+				// delete from family requested rewards
+				this.family_username.requestedRewards.splice(i, 1);
+				return;
+			}
+		}
+	}
+	
+}
+
+function Child() {
+	Child.inherits(Member);
+	this.requestTask = function(task) {
+		this.family_username.requestedTasks.push(task);
+	}
+
+	this.requestReward = function(reward) {
+		this.family_username.requestedRewards.push(reward);
+	}
 
 	this.completeTask = function(task) {
 		task.completed = true;
@@ -55,24 +115,20 @@ function Family(username, lastname) {
 	}
 }
 
-function Member(name, username, family_username) {
-	this.name = name;
-	this.username = username;
-	this.family_username = family_username;
-	this.family = getFamilyByUsername(family_username);
-}
 
-function Task(name, description, reward) {
+
+
+function Task(name, description, value) {
 	this.name = name;
 	this.description = description;
-	this.reward = reward;
+	this.value = value;
 	this.completed = false;
 }
 
-function Reward(name, description, cost) {
+function Reward(name, description, value) {
 	this.name = name;
 	this.description = description;
-	this.cost = cost;
+	this.value = value;
 	this.earned = false;
 }
 
