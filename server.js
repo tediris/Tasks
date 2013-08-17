@@ -171,6 +171,8 @@ app.post('/finish_task', function (req, res) {
   	}
 
   	var family = getFamilyByUsername(req.body.family_username);
+
+  	//console.log(family);
   	var task = getTaskFromFamily(family, req.body.name);
   	var child = family.getUser(req.body.username);
   	
@@ -359,7 +361,7 @@ function Child(name, username, family_username) {
 
 	this.completeTask = function(task) {
 		task.completed = true;
-		getFamilyFromUser(this).currency = getFamilyFromUser(this).currency + task.reward;
+		getFamilyFromUser(this).currency = parseInt(getFamilyFromUser(this).currency) + parseInt(task.reward);
 		task.completionTime = getCurrentTime();
 		// apparently this formula calculates difference between time according to a answers.yahoo post lol
 		task.timeToCompleteTask = (task.completionTime.getTime() - task.inceptionTime.getTime()) / 1000;
@@ -385,7 +387,7 @@ function Task(name, description, reward) {
 	this.description = description;
 	this.reward = reward;
 	this.completed = false;
-	this.inceptionTime = null;
+	this.inceptionTime = getCurrentTime();
 	this.completionTime = null;
 	this.timeToCompleteTask = null;
 }
@@ -409,26 +411,28 @@ function getFamilyByUsername(family_username) {
 }
 
 function getTaskFromFamily(family, taskname) {
-	for (var i = 0; i < family.tasks; i++) {
-		if (family.tasks[i] == taskname) return family.tasks[i];
+	for (var i = 0; i < family.tasks.length; i++) {
+		if (family.tasks[i].name == taskname) {
+			return family.tasks[i];
+		}
 	}
 	return null;
 }
 
 function getRewardFromFamily(family, rewardname) {
-	for (var i = 0; i < family.rewards; i++) {
-		if (family.rewards[i] == rewardname) return family.rewards[i];
+	for (var i = 0; i < family.rewards.length; i++) {
+		if (family.rewards[i].name == rewardname) return family.rewards[i];
 	}
 	return null;
 }
 
 function getFamilyFromUser(user) {
-	var family_username = userMap[user.name];
-	return getFamilyByUsername(family_username);
+	var family = getFamilyByUsername(user.family_username);
+	return family;
 }
 
 function getCurrentTime() {
-	var currentDate = new Date();
+	var d = new Date();
 	var year = d.getFullYear();
 	var month = d.getMonth();
 	var day = d.getDate();

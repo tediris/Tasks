@@ -27,11 +27,11 @@ function newReward(family_username, name, description, cost) {
 }
 
 function completeTask(family_username, task_name, username) {
-	$.post('/finish_task', {family_username: family_username, name: name, username: username});
+	$.post('/finish_task', {family_username: family_username, name: task_name, username: username});
 }
 
 function claimReward(family_username, reward_name, username) {
-	$.post('/finish_reward', {family_username: family_username, name: name, username: username});
+	$.post('/finish_reward', {family_username: family_username, name: reward_name, username: username});
 }
 
 function getUser(username, callback) { //callback format should be function callback(data) {};
