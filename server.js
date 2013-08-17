@@ -278,6 +278,7 @@ function Family(username, lastname) {
 	this.completedTasks = []; 
 	this.rewards = [];
 	this.requestedRewards = [];
+	this.currency = 0;
 	// this.completedRewards = []; should we keep track of this? probably, people like seeing progress
 
 	this.getUser = function(username) {
@@ -358,7 +359,7 @@ function Child(name, username, family_username) {
 
 	this.completeTask = function(task) {
 		task.completed = true;
-		this.currency = this.currency + task.reward;
+		getFamilyFromUser(this).currency = getFamilyFromUser(this).currency + task.reward;
 		task.completionTime = getCurrentTime();
 		// apparently this formula calculates difference between time according to a answers.yahoo post lol
 		task.timeToCompleteTask = (task.completionTime.getTime() - task.inceptionTime.getTime()) / 1000;
