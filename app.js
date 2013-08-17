@@ -43,7 +43,7 @@ app.post('/new_user', function (req, res) {
 
 app.post('/new_family', function(req, res) {
 	if(!req.body.hasOwnProperty('username') || 
-     !req.body.hasOwnProperty('name')) {
+     !req.body.hasOwnProperty('lastname')) {
     	res.statusCode = 400;
     	return res.send('Error 400: Post syntax incorrect.');
   	}
@@ -51,6 +51,64 @@ app.post('/new_family', function(req, res) {
   	var fam = new Family(req.body.username, req.body.lastname);
   	families.push(fam);
   	res.json(true);
+});
+
+app.post('/new_task', function (req, res) {
+	if(!req.body.hasOwnProperty('family_username') || 
+     !req.body.hasOwnProperty('name') || 
+     !req.body.hasOwnProperty('description') || 
+     !req.body.hasOwnProperty('reward')) {
+    	res.statusCode = 400;
+    	return res.send('Error 400: Post syntax incorrect.');
+  	}
+
+  	var task = new Task(req.body.name, req.body.description, req.body.reward);
+  	var family = getFamilyByUsername(req.body.family_username);
+  	family.tasks.push(task);
+});
+
+app.post('/new_reward', function (req, res) {
+	if(!req.body.hasOwnProperty('family_username') || 
+     !req.body.hasOwnProperty('name') || 
+     !req.body.hasOwnProperty('description') || 
+     !req.body.hasOwnProperty('cost')) {
+    	res.statusCode = 400;
+    	return res.send('Error 400: Post syntax incorrect.');
+  	}
+
+  	var reward = new Task(req.body.name, req.body.description, req.body.cost);
+  	var family = getFamilyByUsername(req.body.family_username);
+  	family.tasks.push(reward);
+});
+
+app.post('/finish_task', function (req, res) {
+	if(!req.body.hasOwnProperty('family_username') || 
+     !req.body.hasOwnProperty('name')) {
+    	res.statusCode = 400;
+    	return res.send('Error 400: Post syntax incorrect.');
+  	}
+
+  	var family = getFamilyByUsername(req.body.family_username);
+  	var task = getTaskFromFamily(family, req.body.name);
+  	task.completed = true;
+  	family.completeTask(task);
+  	res.json(true);
+
+});
+
+app.post('/finish_reward', function (req, res) {
+	if(!req.body.hasOwnProperty('family_username') || 
+     !req.body.hasOwnProperty('name')) {
+    	res.statusCode = 400;
+    	return res.send('Error 400: Post syntax incorrect.');
+  	}
+
+  	var family = getFamilyByUsername(req.body.family_username);
+  	var reward = getTaskFromFamily(family, req.body.name);
+  	reward.earned = true;
+  	family.claimReward(reward);
+  	res.json(true);
+
 });
 
 app.get('/', routes.index);
@@ -68,6 +126,22 @@ app.get('/user/:username', function (req, res) {
 	result['user'] = family.getUser(username);
 	result['family'] = family;
 	res.json(result);
+});
+
+app.get('/tasks/:family_username', function (req, res) {
+	var family_username = req.params.family_username;
+	var family = getFamilyByUsername(family_username);
+	res.json(family.tasks);
+});
+
+app.get('/rewards/:family_username', function (req, res) {
+	var family_username = req.params.family_username;
+	var family = getFamilyByUsername(family_username);
+	res.json(family.rewards);
+});
+
+app.get('/all', function (req, res) {
+	res.json(families);
 });
 
 http.createServer(app).listen(app.get('port'), function(){
@@ -133,5 +207,21 @@ function getFamilyByUsername(family_username) {
 	for (var i = 0; i < families.length; i++) {
 		if (families[i].username == family_username) return families[i];
 	}
+	return null;
+}
+
+function getTaskFromFamily(family, taskname) {
+	for (var i = 0; i < family.tasks; i++) {
+		if (family.tasks[i] == taskname) return family.tasks[i];
+	}
+
+	return null;
+}
+
+function getRewardFromFamily(family, rewardname) {
+	for (var i = 0; i < family.rewards; i++) {
+		if (family.rewards[i] == rewardname) return family.rewards[i];
+	}
+
 	return null;
 }
