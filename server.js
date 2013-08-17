@@ -199,10 +199,22 @@ app.get('/tasks/:family_username', function (req, res) {
 	res.json(family.tasks);
 });
 
+app.get('/requestedtasks/:family_username', function (req, res) {
+	var family_username = req.params.family_username;
+	var family = getFamilyByUsername(family_username);
+	res.json(family.requestedTasks);
+});
+
 app.get('/rewards/:family_username', function (req, res) {
 	var family_username = req.params.family_username;
 	var family = getFamilyByUsername(family_username);
 	res.json(family.rewards);
+});
+
+app.get('/requestedrewards/:family_username', function (req, res) {
+	var family_username = req.params.family_username;
+	var family = getFamilyByUsername(family_username);
+	res.json(family.requestedRewards);
 });
 
 app.get('/all', function (req, res) {

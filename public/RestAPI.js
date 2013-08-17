@@ -48,6 +48,14 @@ function getTasks(family_username, callback) {
 	$.get('/tasks/' + family_username, callback);
 }
 
+function getRequestedTasks(family_username, callback) {
+	$.get('/requestedtasks/' + family_username, callback);
+}
+
 function getRewards(family_username, callback) {
 	$.get('/rewards/' + family_username, callback);
+}
+
+function getRequestedRewards(family_username, callback) {
+	$.get('/requestedrewards/' + family_username, callback);
 }
