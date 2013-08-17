@@ -43,15 +43,42 @@ function Family(username, lastname) {
 	this.tasks = [];
 	this.rewards = [];
 	this.currency = 0;
+
+	this.completeTask = function(task) {
+		task.completed = true;
+		this.currency = this.currency + task.reward;
+	}
+
+	this.claimReward = function(reward) {
+		reward.earned = true;
+		this.currency = this.currency - reward.cost;
+	}
 }
 
 function Member(name, username, family_username) {
 	this.name = name;
 	this.username = username;
 	this.family_username = family_username;
-	this.family = 
+	this.family = getFamilyByUsername(family_username);
+}
+
+function Task(name, description, reward) {
+	this.name = name;
+	this.description = description;
+	this.reward = reward;
+	this.completed = false;
+}
+
+function Reward(name, description, cost) {
+	this.name = name;
+	this.description = description;
+	this.cost = cost;
+	this.earned = false;
 }
 
 function getFamilyByUsername(family_username) {
-
+	for (var i = 0; i < families.length; i++) {
+		if (families[i].username == family_username) return families[i];
+	}
+	return null;
 }
