@@ -276,7 +276,7 @@ function Family(username, lastname) {
 	}
 
 	this.addMember = function(member) {
-		if (this.members.indeOf(member) == -1) this.members.push(member);
+		if (this.members.indexOf(member) == -1) this.members.push(member);
 	}
 }
 
@@ -284,7 +284,6 @@ function Member(name, username, family_username) {
 	this.name = name;
 	this.username = username;
 	this.family_username = family_username;
-	this.family = getFamilyByUsername(family_username);
 	userMap[username] = family_username;
 }
 
