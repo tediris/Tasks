@@ -80,6 +80,34 @@ app.post('/new_family', function(req, res) {
   	res.json(true);
 });
 
+app.post('/child/request_task', function (req, res) {
+	if(!req.body.hasOwnProperty('family_username') || 
+     !req.body.hasOwnProperty('name') || 
+     !req.body.hasOwnProperty('description') || 
+     !req.body.hasOwnProperty('reward')) {
+    	res.statusCode = 400;
+    	return res.send('Error 400: Post syntax incorrect.');
+  	}
+
+  	var task = new Task(req.body.name, req.body.description, req.body.reward);
+  	var family = getFamilyByUsername(req.body.family_username);
+  	family.requestedTasks.push(task); //can get the child and do a .request Task too
+});
+
+app.post('/child/request_reward', function (req, res) {
+	if(!req.body.hasOwnProperty('family_username') || 
+     !req.body.hasOwnProperty('name') || 
+     !req.body.hasOwnProperty('description') || 
+     !req.body.hasOwnProperty('reward')) {
+    	res.statusCode = 400;
+    	return res.send('Error 400: Post syntax incorrect.');
+  	}
+
+  	var task = new Task(req.body.name, req.body.description, req.body.reward);
+  	var family = getFamilyByUsername(req.body.family_username);
+  	family.requestedTasks.push(task); //can get the child and do a .request Task too
+});
+
 app.post('/new_task', function (req, res) {
 	if(!req.body.hasOwnProperty('family_username') || 
      !req.body.hasOwnProperty('name') || 
@@ -103,7 +131,7 @@ app.post('/new_reward', function (req, res) {
     	return res.send('Error 400: Post syntax incorrect.');
   	}
 
-  	var reward = new Task(req.body.name, req.body.description, req.body.cost);
+  	var reward = new Reward(req.body.name, req.body.description, req.body.cost);
   	var family = getFamilyByUsername(req.body.family_username);
   	family.tasks.push(reward);
 });
@@ -245,7 +273,7 @@ function Parent() {
 
 	this.approveTask = function(task) {
 		for (var i = 0; i < this.family.requestedTasks.length; i++) {
-			if (this.family.requestedTasks[i] == this.task) {
+			if (this.family.requestedTasks[i].name == this.task.name) {
 				// add to family tasks
 				this.family.tasks.push(task);
 				task.currentTime = getCurrentTime();
